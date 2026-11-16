@@ -1,0 +1,123 @@
+# -- Number of replicas. Metrics history is kept in memory per Pod, so a single
+# replica gives the most consistent charts.
+replicaCount: 1
+
+image:
+  repository: ghcr.io/pslabs2/dashboard
+  # -- Defaults to the chart appVersion.
+  tag: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# -- Dashboard configuration (rendered to dashboard.yaml in a ConfigMap).
+# See config/dashboard.example.yaml for every option. Changes are picked up
+# by the running Pod without a restart.
+config:
+  title: Homelab
+  argocd: {}
+  #  url: https://argocd.example.com
+  #  namespace: argocd
+  discovery:
+    ingress:
+      enabled: true
+      defaultGroup: Discovered
+  groups: []
+  #  - name: Media
+  #    apps:
+  #      - name: Jellyfin
+  #        url: https://jellyfin.example.com
+  #        icon: film
+
+# -- Use an existing ConfigMap (key `dashboard.yaml`) instead of `config`.
+existingConfigMap: ""
+
+auth:
+  # -- `none` or `proxy`. With `proxy`, every request except health probes must
+  # carry the identity header set by a forward-auth proxy (oauth2-proxy,
+  # Authelia, Authentik, ...). Only use `proxy` when the Service is reachable
+  # exclusively through that proxy.
+  mode: none
+  userHeader: x-auth-request-user
+  emailHeader: x-auth-request-email
+
+# -- Extra environment variables, e.g. K8S_CACHE_TTL_MS or
+# METRICS_SAMPLE_INTERVAL_MS (see README > Configuration).
+env: []
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+rbac:
+  # -- Create a read-only ClusterRole for nodes, pods, namespaces, events,
+  # workloads, ingresses, metrics.k8s.io and Argo CD Applications.
+  create: true
+
+podAnnotations: {}
+podLabels: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: ["ALL"]
+
+service:
+  type: ClusterIP
+  port: 80
+  annotations: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  #  nginx.ingress.kubernetes.io/auth-url: https://auth.example.com/oauth2/auth
+  hosts:
+    - host: dashboard.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: dashboard-tls
+  #    hosts: [dashboard.example.com]
+
+# -- Gateway API HTTPRoute (gateway.networking.k8s.io/v1).
+httpRoute:
+  enabled: false
+  annotations: {}
+  parentRefs: []
+  #  - name: main-gateway
+  #    namespace: gateway
+  #    sectionName: https
+  hostnames:
+    - dashboard.example.com
+  # -- Route matches; defaults to every path.
+  matches:
+    - path:
+        type: PathPrefix
+        value: /
+  # -- Extra filters, e.g. request header modification.
+  filters: []
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    memory: 384Mi
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

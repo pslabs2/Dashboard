@@ -1,0 +1,20 @@
+Homelab dashboard installed.
+{{- if .Values.ingress.enabled }}
+{{- range .Values.ingress.hosts }}
+  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .host }}
+{{- end }}
+{{- else if .Values.httpRoute.enabled }}
+{{- range .Values.httpRoute.hostnames }}
+  https://{{ . }}
+{{- end }}
+{{- else }}
+
+Access it locally:
+  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "homelab-dashboard.fullname" . }} 8080:{{ .Values.service.port }}
+  open http://localhost:8080
+{{- end }}
+{{- if eq .Values.auth.mode "none" }}
+
+WARNING: auth.mode is "none". Anyone who can reach the dashboard can view
+cluster state. Put it behind a forward-auth proxy and set auth.mode=proxy.
+{{- end }}

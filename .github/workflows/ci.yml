@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  chart:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: azure/setup-helm@v4
+      - name: Lint chart
+        run: helm lint deploy/helm/homelab-dashboard
+      - name: Render chart with all options
+        run: |
+          helm template test deploy/helm/homelab-dashboard \
+            --set ingress.enabled=true \
+            --set httpRoute.enabled=true \
+            --set 'httpRoute.parentRefs[0].name=gateway' \
+            --set auth.mode=proxy > /dev/null

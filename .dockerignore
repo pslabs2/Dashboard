@@ -1,0 +1,11 @@
+.git
+.github
+.next
+node_modules
+coverage
+deploy
+config/dashboard.yaml
+*.md
+.env*
+Dockerfile
+.dockerignore
