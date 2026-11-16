@@ -13,10 +13,13 @@ It runs in-cluster with a read-only ServiceAccount.
 
 ```sh
 helm install dashboard oci://ghcr.io/pslabs2/charts/homelab-dashboard \
-  --namespace dashboard --create-namespace -f my-values.yaml
+  --namespace dashboard --create-namespace \
+  -f https://raw.githubusercontent.com/pslabs2/Dashboard/main/deploy/my-values.yaml
 ```
 
-Or point an Argo CD Application at `deploy/helm/homelab-dashboard`. See [`values.yaml`](deploy/helm/homelab-dashboard/values.yaml) for all options. Exposure is via `ingress.*` (Ingress) or `httpRoute.*` (Gateway API `HTTPRoute`); both are disabled by default.
+[`deploy/my-values.yaml`](deploy/my-values.yaml) exposes the dashboard at `dashboard.pukarsubedi.com` through Traefik, reached via a Cloudflare Tunnel (TLS terminates at Cloudflare, so the Ingress has no `tls`). Point the tunnel's public hostname at the Traefik Service.
+
+Or point an Argo CD Application at `deploy/helm/homelab-dashboard`. See [`values.yaml`](deploy/helm/homelab-dashboard/values.yaml) for all options. Exposure is via `ingress.*` (Ingress, enabled by default for `dashboard.pukarsubedi.com` with the `traefik` class) or `httpRoute.*` (Gateway API `HTTPRoute`, disabled by default).
 
 Images: `ghcr.io/pslabs2/dashboard` (`linux/amd64`, `linux/arm64`), tagged `main`, `sha-<commit>` and `X.Y.Z` on release tags.
 
