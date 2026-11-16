@@ -1,0 +1,11 @@
+# Values for the dashboard.pukarsubedi.com deployment
+# (Cloudflare Tunnel -> Traefik; TLS terminates at Cloudflare).
+ingress:
+  enabled: true
+  className: traefik
+  hosts:
+    - host: dashboard.pukarsubedi.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
