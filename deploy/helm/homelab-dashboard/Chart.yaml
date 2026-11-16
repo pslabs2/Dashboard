@@ -1,0 +1,13 @@
+apiVersion: v2
+name: homelab-dashboard
+description: Homelab dashboard - application launcher, Kubernetes monitoring and Argo CD GitOps visibility.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+home: https://github.com/pslabs2/Dashboard
+sources:
+  - https://github.com/pslabs2/Dashboard
+keywords:
+  - dashboard
+  - homelab
+  - argocd

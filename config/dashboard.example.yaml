@@ -1,0 +1,46 @@
+# Homelab dashboard configuration.
+#
+# Copy to config/dashboard.yaml for local development, or set it through the
+# Helm chart's `config` value. The file is re-read whenever it changes, so
+# ConfigMap updates apply without restarting the Pod.
+
+title: Homelab
+subtitle: Applications, cluster health and GitOps at a glance
+
+argocd:
+  # Public Argo CD URL used for "Open in Argo CD" links (optional).
+  url: https://argocd.example.com
+  # Only list Applications in this namespace (default: all namespaces).
+  # namespace: argocd
+
+discovery:
+  ingress:
+    # Also list Ingresses annotated `dashboard.homelab/enabled: "true"`.
+    enabled: true
+    defaultGroup: Discovered
+
+groups:
+  - name: Media
+    apps:
+      - name: Jellyfin
+        url: https://jellyfin.example.com
+        description: Movies and TV
+        # Lucide icon name (https://lucide.dev/icons) or an https image URL.
+        icon: film
+      - name: Sonarr
+        url: https://sonarr.example.com
+        icon: tv
+        # Probe a cluster-internal address instead of the public URL.
+        healthCheck:
+          url: http://sonarr.media.svc.cluster.local:8989/ping
+
+  - name: Infrastructure
+    apps:
+      - name: Argo CD
+        url: https://argocd.example.com
+        icon: git-branch
+      - name: Router
+        url: http://192.168.1.1
+        icon: router
+        # Disable the status probe for this app.
+        healthCheck: false
