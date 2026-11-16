@@ -79,13 +79,14 @@ service:
   port: 80
   annotations: {}
 
+# -- Exposed via Cloudflare Tunnel -> Traefik; TLS terminates at Cloudflare.
 ingress:
-  enabled: false
-  className: ""
+  enabled: true
+  className: traefik
   annotations: {}
   #  nginx.ingress.kubernetes.io/auth-url: https://auth.example.com/oauth2/auth
   hosts:
-    - host: dashboard.example.com
+    - host: dashboard.pukarsubedi.com
       paths:
         - path: /
           pathType: Prefix
